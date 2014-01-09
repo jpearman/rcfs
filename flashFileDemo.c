@@ -92,7 +92,7 @@ task main()
         // dump directory
         RCFS_ReadVTOC();
 
-        // Get the name iof he last file written
+        // Get the name of the last file written
         RCFS_GetLastFilename( lastname, 16 );
 
         // Get a pointer to the data in that last file
@@ -102,7 +102,7 @@ task main()
             writeDebugStreamLine("last file written was %s", &lastname[0] );
             writeDebugStreamLine("data ptr is %08X", data );
             writeDebugStreamLine("length is %08X", datalength );
-            writeDebugStreamLine("the file start like this ...");
+            writeDebugStreamLine("the file starts like this ...");
             for(i=0;i<16;i++)
                 writeDebugStream("%02X ", *(data+i) );
             writeDebugStreamLine("");
