@@ -84,10 +84,12 @@ task main()
         displayLCDString(1, 0, "save a file ... ");
 
         // write a file
-        RCFS_AddFile( tmpData, 1024 );
+        if( RCFS_AddFile( tmpData, 1024 ) == RCFS_ERROR )
+            writeDebugStreamLine("File write error");
 
         // This would save a named file
-        //RCFS_AddFile( tmpData, 1024, "myfile" );
+        //if( RCFS_AddFile( tmpData, 1024, "myfile" ) == RCFS_ERROR )
+        //    writeDebugStreamLine("File write error");
 
         // dump directory
         RCFS_ReadVTOC();

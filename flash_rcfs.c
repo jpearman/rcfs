@@ -107,9 +107,10 @@ RCFS_DebugFile( flash_file *f )
     writeDebugStream(str);
     writeDebugStream(" Addr %08X", f->addr );
     writeDebugStream(" Data %08X", (unsigned long)f->data );
+    writeDebugStream(" Size %5d", f->datalength );
     writeDebugStream(" Type %02X", f->type );
     writeDebugStream(" Time %02X%02X%02X%02X", f->time[0],f->time[1],f->time[2],f->time[3] );
-    writeDebugStream(" Flag %02X", f->unknown );
+//    writeDebugStream(" Flag %02X", f->unknown );
     writeDebugStreamLine("");
 }
 
@@ -393,7 +394,7 @@ RCFS_FindNextFile( flash_file *f )
 /** @param[in] name name of the file to be written                             */
 /*-----------------------------------------------------------------------------*/
 
-void
+int
 RCFS_AddFile( unsigned char *data, int length, char *name )
 {
     long *toc = (long *)(baseaddr + VTOC_OFFSET);
@@ -409,7 +410,7 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
 
     // bounds check length
     if( (length <= 0) || (length > MAX_FLASH_FILE_SIZE))
-        return;
+        return(RCFS_ERROR);
 
     // more than kMaxNumbofFlashFiles files we have an error
     for(slot=0;slot<kMaxNumbofFlashFiles;slot++)
@@ -429,6 +430,11 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
             // to 8030000
             if(nextaddr < 0x18000)
                 nextaddr = 0x18000;
+
+            // Check if there is room for the file
+            // We reserve 4K for user parameter storage
+            if( (nextaddr + length ) > 0x47000 )
+                return(RCFS_ERROR);
 
             // create new file
             RCFS_FileInit( &f );
@@ -457,7 +463,9 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
 
             // Write file
             RCFS_Write( &f );
-            return;
+
+            // We are done
+            return(RCFS_SUCCESS);
             }
         else
             {
@@ -475,6 +483,9 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
                 }
             }
         }
+
+    // No more VTOC space if here
+    return(RCFS_ERROR);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -485,7 +496,7 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
 /** @details
  *  Add a file to the file system using the default filename
  */
-void
+int
 RCFS_AddFile( unsigned char *data, int length )
 {
     char name[16];
@@ -496,12 +507,12 @@ RCFS_AddFile( unsigned char *data, int length )
 
     // any room left ?
     if( slot < 0 )
-        return;
+        return(RCFS_ERROR);
     // create default filename
     sprintf( &name[0], "%s%03d", RCFS_BASENAME, slot);
 
     // Add this file
-    RCFS_AddFile( data, length, name );
+    return( RCFS_AddFile( data, length, name ) );
 }
 
 /*-----------------------------------------------------------------------------*/
