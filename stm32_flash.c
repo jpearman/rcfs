@@ -130,8 +130,12 @@ typedef struct
 #define EraseTimeout                (0x000B0000)
 #define ProgramTimeout              (0x00002000)
 
-
+// V4 changed the way enums are handled
+#if kRobotCVersionNumeric < 400
 typedef enum
+#else
+typedef enum _FLASH_Status
+#endif
 {
   FLASH_BUSY = 1,
   FLASH_ERROR_PG,

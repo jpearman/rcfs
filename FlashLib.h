@@ -38,6 +38,8 @@
 #ifndef __FLASHLIB__
 #define __FLASHLIB__
 
+#include <FirmwareVersion.h>
+
 #include <stm32_flash.c>
 
 // These are other flash related libraries that I may release later

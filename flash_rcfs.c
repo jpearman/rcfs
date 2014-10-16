@@ -35,7 +35,7 @@
 /*                                                                             */
 /*-----------------------------------------------------------------------------*/
 
-#include <FirmwareVersion.h>
+//#include <FirmwareVersion.h>
 
 /*-----------------------------------------------------------------------------*/
 /** @file    flash_rcfs.c
@@ -53,7 +53,10 @@ typedef struct _flash_file {
     unsigned char name[16];                ///< file name
     unsigned char type;                    ///< file type, wav, exe etc.
     unsigned char time[4];                 ///< file creation time
-    unsigned char unknown;                 ///< unknown flags
+    unsigned char unknown;                 ///< unknown flags V3.XX
+
+    // V4 added a couple of bytes to the header
+    unsigned char pad[2];                  ///< unknown flags V4.XX
 
     // not written to flash, we keep them here for convienience
     unsigned long addr;                    ///< address of file in flash
@@ -63,7 +66,14 @@ typedef struct _flash_file {
 
 /** @cond    */
 //#define FFDEBUG                  1
+#if kRobotCVersionNumeric < 400
 #define FLASH_FILE_HEADER_SIZE  22
+#else
+// fix, 16-Oct-2014, JP
+// looks like V4.26 changed header size
+#define FLASH_FILE_HEADER_SIZE  24
+#endif
+
 static  unsigned long  baseaddr = kStartOfFileSystem;
 
 // Define maximum file size, can be overridden in user code
@@ -75,7 +85,13 @@ static  unsigned long  baseaddr = kStartOfFileSystem;
 #if kRobotCVersionNumeric < 359
 #define VTOC_OFFSET     24
 #else
+#if kRobotCVersionNumeric < 400
 #define VTOC_OFFSET     28
+#else
+// fix, 16-Oct-2014, JP
+// V4.26 changed VTOC offset
+#define VTOC_OFFSET     160
+#endif
 #endif
 
 #define RCFS_SUCCESS    0
@@ -140,6 +156,8 @@ RCFS_FileInit( flash_file *f )
     f->time[2] = 0x09;
     f->time[3] = 0x00;
     f->unknown = 0;
+    f->pad[0]  = 0;
+    f->pad[1]  = 0;
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -226,6 +244,8 @@ RCFS_ReadHeader( flash_file *f )
     f->time[2] = *q++;
     f->time[3] = *q++;
     f->unknown = *q++;
+    f->pad[0]  = 0;
+    f->pad[1]  = 0;
 }
 
 /*-----------------------------------------------------------------------------*/
