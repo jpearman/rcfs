@@ -317,7 +317,7 @@ FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data)
       half word */
       Addr++;
 
-      *Addr = Data >> 16;
+      *Addr = (uint16_t)(Data >> 16);
 
       /* Wait for last operation to be completed */
       status = FLASH_WaitForLastOperation(ProgramTimeout);

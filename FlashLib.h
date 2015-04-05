@@ -46,7 +46,7 @@
 // (well, user_param I think may have been released before but it's
 // not included here)
 //
-//#include <user_params.c>
+#include <flash_user.c>
 //#include <flash_ram.c>
 
 #include <flash_rcfs.c>

@@ -469,7 +469,7 @@ RCFS_AddFile( unsigned char *data, int length, char *name )
 
 #ifdef  FFDEBUG
             // Debug
-            FileDebug(&f);
+            RCFS_DebugFile(&f);
 #endif
             // Unlock the Flash Bank1 Program Erase controller
             FLASH_UnlockBank1();
