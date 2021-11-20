@@ -1,7 +1,8 @@
 rcfs
 ====
 
-ROBOTC file system access
+ROBOTC file system access for the VEX cortex
+(note, this is not compatible with VEX IQ)
 
 16 Oct 2014
 Added compatibility for ROBOTC V4.26
